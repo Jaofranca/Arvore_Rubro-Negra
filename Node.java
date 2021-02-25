@@ -1,10 +1,10 @@
 package ifce.estruturadados.Arvorerubronegra;
 
 public class Node {
-	Boolean color;
-	Integer key;
-	Node left,right;
-	Node pai;
+	private Boolean color;
+	private Integer key;
+	private Node left,right;
+	private Node pai;
 	
 	Node(Boolean color,Integer key,Node left,Node right,Node pai ){
 		this.color = color;
