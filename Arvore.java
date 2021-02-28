@@ -13,13 +13,14 @@ public class Arvore {
 	
 	public void insereNo(Integer valor,Node noBase) {
 			if(raiz == null) {
-				raiz = new Node(true,valor,null,null,null);
+				raiz = new Node(false,valor,null,null,null);
 				
 			}
 			if(valor > noBase.getKey()) {
 				if(noBase.getRight() == null) {
 					Node novoNo = new Node(true,valor,null,null,noBase);
 					noBase.setRight(novoNo);
+					re_estruturarArvore(noBase.getRight());
 				}
 				else {
 					insereNo(valor,noBase.getRight());
@@ -29,6 +30,7 @@ public class Arvore {
 					if(noBase.getLeft() == null) {
 						Node novoNo = new Node(true,valor,null,null,noBase);
 						noBase.setLeft(novoNo);
+						re_estruturarArvore(noBase.getLeft());
 					}
 					else {
 						insereNo(valor,noBase.getLeft());
@@ -40,12 +42,53 @@ public class Arvore {
 			}
 		}
 		
-	// public void re_estruturarArvore(Node x) {
-	//	Node pai = x.getPai();
-	//	if(pai == pai.getPai().getLeft()) {
-	//		Node y = pai.getPai().getRight();
-	//	}
-	//}
+	 public void re_estruturarArvore(Node x) {
+		Node pai = x.getPai();
+		Node y;
+		while(pai.getColor() == true) {
+		if(pai == pai.getPai().getLeft()) {
+			// caso 1 (tio é vermelho):
+			// muda a cor do pai e do tio para preto e dos avós para vermelho.
+		 // Então, sobe dois níveis na árvore.
+			y = pai.getPai().getRight();
+			if(y.getColor() == true) {
+				pai.setColor(false);
+				y.setColor(false);
+				pai.getPai().setColor(true);
+				x = pai.getPai();
+			}
+			else {
+				if(x == pai.getRight()) {
+					x = pai;
+					RotacionarEsquerda(x);
+				}
+				pai.setColor(false);
+				pai.getPai().setColor(true);
+				RotacionarDireita(pai.getPai());
+			}
+		}else {
+			y = pai.getPai().getRight();
+			if(y.getColor() == true) {
+				pai.setColor(false);
+				y.setColor(false);
+				pai.getPai().setColor(true);
+				x = pai.getPai();
+			}
+			else {
+				if(x == pai.getRight()) {
+					x = pai;
+					RotacionarDireita(x);
+				}
+				pai.setColor(false);
+				pai.getPai().setColor(true);
+				RotacionarEsquerda(pai.getPai());
+		}
+			}
+		}
+		raiz.setColor(false);
+		
+	}
+
 	public void RotacionarEsquerda(Node x) {
 		Node y = x.getRight();
 		Node pai = x.getPai();
