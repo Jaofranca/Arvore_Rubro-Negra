@@ -3,7 +3,7 @@ package ifce.estruturadados.Arvorerubronegra;
 
 public class Arvore {
 	Node raiz;
-	Node nil;
+	static Node nil;
 	
 	Arvore(){
 		this.nil = new Node(false,null,null,null,null);
@@ -41,11 +41,57 @@ public class Arvore {
 				System.out.println("Valor " + valor + "Ja foi inserido na arvore");
 			}
 		}
+	/**
+	 * 
+	 * public void re_estruturarArvore(Node x) {
 		
+		Node y;
+		while(x.getPai().getColor() == true ) {
+		if(x.getPai() == x.getPai().getPai().getLeft()) {
+			y = x.getPai().getPai().getRight();
+			if(y.getColor() == true) {
+				x.getPai().setColor(false);
+				y.setColor(false);
+				x.getPai().getPai().setColor(true);
+				x = x.getPai().getPai();
+			}
+			else {
+				if(x == x.getPai().getRight()) {
+					x = x.getPai();
+					RotacionarEsquerda(x);
+				}
+				x.getPai().setColor(false);
+				x.getPai().getPai().setColor(true);
+				RotacionarDireita(x.getPai().getPai());
+			}
+		}else {
+			y = x.getPai().getPai().getLeft();
+			if(y.getColor() == true) {
+				x.getPai().setColor(false);
+				y.setColor(false);
+				x.getPai().getPai().setColor(true);
+				x = x.getPai().getPai();
+			}
+			else {
+				if(x == x.getPai().getLeft()) {
+					x = x.getPai();
+					RotacionarDireita(x);
+				}
+				x.getPai().setColor(false);
+				x.getPai().getPai().setColor(true);
+				RotacionarEsquerda(x.getPai().getPai());
+		}
+			}
+		}
+		raiz.setColor(false);
+	 }
+	 */
+	
 	 public void re_estruturarArvore(Node x) {
 		Node pai = x.getPai();
 		Node y;
 		while(pai.getColor() == true ) {
+			
 		if(pai == pai.getPai().getLeft()) {
 			y = pai.getPai().getRight();
 			if(y.getColor() == true) {
@@ -83,9 +129,8 @@ public class Arvore {
 			}
 		}
 		raiz.setColor(false);
-		
-	}
-
+	 }
+	 
 	public void RotacionarEsquerda(Node x) {
 		Node y = x.getRight();
 		Node pai = x.getPai();
@@ -160,7 +205,7 @@ public class Arvore {
 			raiz = y;
 		}
 		else if (x == x.getPai().getLeft()) {
-			x.setPai(y);
+			x.getPai().setLeft(y);
 		}
 		else {
 			x.getPai().setRight(y);
@@ -168,34 +213,112 @@ public class Arvore {
 		}
 	}
 	
-	public Node remove(Integer x) {
+	public void remove(Integer n) {
+		
 		if(raiz == null) {
-			return raiz;
+			System.out.print("Raiz nula, não há elementos para remover");
 		}
-		Node NoRemovido = pesquisaNo(x,raiz);
-		if(NoRemovido.getLeft() == nil && NoRemovido.getRight() == nil) {
-			if(NoRemovido == NoRemovido.getPai().getLeft()) {
-				NoRemovido.getPai().setLeft(nil);
-				NoRemovido.setPai(null);
+		Node z = pesquisaNo(n,raiz);
+		if(z.getKey() == n) {
+			Node x = z;
+			Node y = z;
+		
+		
+		Boolean CorY = z.getColor();
+		if(z.getLeft() == Arvore.nil) {
+			x = z.getRight();
+            this.transplant(z, z.getRight());
+		}else if(z.getRight() == nil) {
+			x = z.getLeft();
+			transplant(z,z.getLeft());
+		}
+		
+		else {
+			y = z.successor();
+			CorY = y.getColor();
+			x = y.getRight();
+			if(y.getPai() == z) {
+				x.setPai(y);
 			}else {
-				NoRemovido.getPai().setRight(nil);
-				NoRemovido.setPai(null);
+				transplant(y, y.getRight());
+				y.setRight(z.getRight());
+				y.getRight().setPai(y);
 			}
-		}
-		else if(NoRemovido.getLeft() != nil && NoRemovido.getRight() == nil) {
-			if(NoRemovido == NoRemovido.getPai().getLeft()) {
-				NoRemovido.getPai().setLeft(NoRemovido.getLeft());
-				NoRemovido.setPai(null);
-			}else {
-				NoRemovido.getPai().setRight(NoRemovido.getRight());
-				NoRemovido.setPai(null);
-			}
-		}
-		else if(NoRemovido.getLeft() != nil && NoRemovido.getRight() != nil) {
+			transplant(z,y);
+			y.setLeft(z.getLeft());
+			y.getLeft().setPai(y);
+			y.setColor(z.getColor());
 			
 		}
-		return NoRemovido;
+		if(CorY == false) {
+			fixaremocao(x);
+			
+		}
+		
 	}
+		}
+	private void fixaremocao(Node n) {
+		Node x;
+
+		while (n != raiz && n.getColor() == false) {
+				
+				if (n.getPai()!= null && n == n.getPai().getLeft()) {
+						x = n.getPai().getRight();
+
+						if (x.getColor() == true) { // caso 1
+								x.setColor(false);
+								n.getPai().setColor(true);	
+								RotacionarEsquerda(n.getPai());
+								x = n.getPai().getRight();
+						}
+						if (x.getLeft().getColor() == false && x.getRight().getColor() == false) { // caso 2
+								x.setColor(true);
+								n = n.getPai();
+						} else {
+								if (x.getRight().getColor() == false) { // caso 3
+										x.getLeft().setColor(false);
+										x.setColor(true);
+										RotacionarDireita(x);
+										x = n.getPai().getRight();
+								}
+								// caso 4
+								x.setColor(n.getPai().getColor());
+								n.getPai().setColor(false);
+								x.getRight().setColor(false);
+								RotacionarEsquerda(n.getPai());
+								n = raiz;
+						}
+				}	else {
+					x = n.getPai().getLeft();
+
+					if (x.getColor() == true) { // caso 1
+						x.setColor(false);
+						n.getPai().setColor(true);	
+						RotacionarDireita(n.getPai());
+						x = n.getPai().getLeft();
+					}
+					if (x.getLeft().getColor() == false && x.getRight().getColor() == false) { // caso 2
+							x.setColor(true);
+							n = n.getPai();
+					} else {
+							if (x.getRight().getColor() == false) { // caso 3
+									x.getRight().setColor(false);
+									x.setColor(true);
+									RotacionarEsquerda(x);
+									x = n.getPai().getLeft();
+							}
+							// caso 4
+							x.setColor(n.getPai().getColor());
+							n.getPai().setColor(false);
+							x.getLeft().setColor(false);
+							RotacionarDireita(n.getPai());
+							n = raiz;
+						}
+				}
+		}
+		n.setColor(false);
+}
+
 	public String PrintNodeColor(Node No) {
 		if(No.getColor() == true) {
 			return "vermelho";
@@ -207,7 +330,7 @@ public class Arvore {
 	public void imprimePrefixado(Node noBase) {
 		if(noBase != null) {
 			if(noBase != nil) {
-				System.out.print(noBase.getKey() + " cor: " + PrintNodeColor(noBase) + "\t");
+				System.out.println(noBase.getKey() + " cor: " + PrintNodeColor(noBase) + "\t");
 			}
 			imprimePrefixado(noBase.getLeft());
 			imprimePrefixado(noBase.getRight());
@@ -217,7 +340,7 @@ public class Arvore {
 			if(noBase != null) {
 				imprimeInterfixado(noBase.getLeft());
 				if(noBase != nil) {
-					System.out.print(noBase.getKey() + " cor: " + PrintNodeColor(noBase) + "\t");
+					System.out.println("Nó :" + noBase.getKey() + " cor: " + PrintNodeColor(noBase) + "\t");
 				}
 				imprimeInterfixado(noBase.getRight());
 			}
@@ -227,7 +350,7 @@ public class Arvore {
 					imprimePosfixado(noBase.getLeft());
 					imprimePosfixado(noBase.getRight());
 					if(noBase != nil) {
-						System.out.print(noBase.getKey() + " cor: " + PrintNodeColor(noBase) + "\t");
+						System.out.println(noBase.getKey() + " cor: " + PrintNodeColor(noBase) + "\t");
 					}
 					
 				}
@@ -235,4 +358,5 @@ public class Arvore {
 	}
 	
 }
+
 

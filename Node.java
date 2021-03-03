@@ -44,6 +44,44 @@ public class Node {
 		this.pai = pai;
 	}
 	
-	
+    public Node min() {
+        if (this.left != Arvore.nil) {
+        	return this.left.min();
+        }
+        else {
+        	return this;
+        }
+    }
+
+    public Node max() {
+        if (this.right != Arvore.nil) {
+        	return this.right.max();
+        }
+        else {
+        	return this;
+        }
+    }
+
+    public Node successor() {
+        if (this.right != Arvore.nil) {
+        	return this.right.min();
+        }
+        else {
+        	return this;
+        }
+    }
+    
+    public int altura() {
+        if (this.getLeft() != Arvore.nil && this.right != Arvore.nil) {
+            return 1 + Math.max(this.getLeft().altura(), this.getRight().altura());
+        }
+        else if (this.getLeft() != Arvore.nil) {
+            return 1 + this.getLeft().altura();
+        }
+        else if (this.getRight() != Arvore.nil) {
+            return 1 + this.getRight().altura();
+        }
+        else return 0;
+    }
 
 }
